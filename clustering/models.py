@@ -2,7 +2,10 @@ from pathlib import Path
 import pandas as pd
 import io
 import csv
+
+from django.core.validators import MinValueValidator
 from django.db import models
+
 
 # Create your models here.
 
@@ -16,14 +19,18 @@ class Document(models.Model):
 #     longitude_name = models.TextField()
 #     # features_name_list = models.ExpressionList()
 
-def import_file(path):
-    suffix = Path(str(path)).suffix
-    if suffix != '.csv':
-        return
-    # decoded_file = path.read().decode("iso-8859-1")
-    # io_string = io.StringIO(decoded_file)
-    # csv_reader = csv.DictReader(io_string, delimiter=';')
-    # columns = cls.columns
-    # errors = []
-    return pd.read_csv(path)
 
+
+class Algorithm(models.Model):
+    df = None
+    file = models.FileField(null=False)
+    k = models.IntegerField(validators=[MinValueValidator(1)],
+                            )
+    eps = models.DecimalField(validators=[MinValueValidator(0)],
+                              max_digits=5,
+                              decimal_places=3,
+                              )
+    # algorithm = models.IntegerField(choices=((1, 'k_mxt'),
+    #                                          (2, 'k_mxt')),
+    #                                 default=1,
+    #                                 )

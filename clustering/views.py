@@ -7,27 +7,30 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
-@csrf_exempt
-def import_file(request):
-    if request.method == "POST":
-        file_request = request.FILES["file"]
-        # errors = self.model.import_file(file_request)
-        # for error in errors:
-        #     messages.error(request, error)
-        # if not errors:
-        #     messages.success(request, _('The file import was successful!'))
-        return redirect('.')
-    form = UploadFileForm()
-    return render(request, 'clustering/clustering.html', {'form': form})
 
-# @csrf_exempt
-# def upload_file(request):
-#     if request.method == 'POST':
-#         form = UploadFileForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             # file is saved
-#             form.save()
-#             return HttpResponseRedirect('clustering/')
-#     else:
-#         form = UploadFileForm()
-#     return render(request, 'clustering/clustering.html', {'form': form})
+
+
+
+class AlgorithmView(View):
+    template = 'clustering/clustering.html'
+    form_model = AlgorithmForm
+    model = Algorithm
+    raise_exception = True
+    df = None
+
+    @csrf_exempt
+    def get(self, request):
+        form = self.form_model()
+        return render(request, self.template, context={'form': form})
+
+    @csrf_exempt
+    def post(self, request):
+        bound_form = self.form_model(request.POST)
+        if bound_form.is_valid():
+            new_obj = bound_form.save()
+            source_file = request.FILES["file"]
+            df = pd.read_csv(source_file)
+            return redirect(new_obj)
+        return render(request, self.template, context={'form': bound_form})
+
+
