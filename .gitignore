@@ -129,5 +129,9 @@ dmypy.json
 .pyre/
 
 #mine
-clustering/clustering/config*
+clusteringengine/config*
 .idea*
+clusteringengine/__init__.py
+clustering/__init__.py
+clustering/migrations*
+
