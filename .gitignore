@@ -133,5 +133,5 @@ clusteringengine/config*
 .idea*
 clusteringengine/__init__.py
 clustering/__init__.py
-clustering/migrations*
+clustering/clustering/migrations
 
