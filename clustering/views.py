@@ -5,15 +5,66 @@ from django.views.decorators.csrf import csrf_exempt
 import pandas as pd
 import plotly.express as px
 from plotly.offline import plot
+import k_mxt_w
 
 
 # Create your views here.
+
+def build_2d(df, bound_form):
+    try:
+        fig_2d = px.scatter_mapbox(df,
+                                   lat=bound_form.cleaned_data['latitude'],
+                                   lon=bound_form.cleaned_data['longitude'],
+                                   hover_name=bound_form.cleaned_data['features'][0],
+                                   hover_data=bound_form.cleaned_data['features'],
+                                   color=bound_form.cleaned_data['features'][0],
+                                   zoom=5,
+                                   height=1000,
+                                   color_continuous_scale=px.colors.cyclical.IceFire,
+                                   )
+        fig_2d.update_layout(mapbox_style="open-street-map")
+        fig_2d.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
+        plt_2d = plot(fig_2d, output_type='div', show_link=False, link_text='', )
+    except Exception as e:
+        pass
+    return plt_2d
+
+
+def clustering(df, bound_form):
+    try:
+        data_property = k_mxt_w.data.DataPropertyImportSpace(df)
+        x, y, features = data_property.get_data(name_latitude_cols=bound_form.cleaned_data['latitude'],
+                                                name_longitude_cols=bound_form.cleaned_data['longitude'],
+                                                features_list=bound_form.cleaned_data['features'])
+        clusters = k_mxt_w.clusters_data.ClustersDataSpaceFeaturesEuclidean(x_init=x,
+                                                                            y_init=y,
+                                                                            features_init=features)
+        alg = k_mxt_w.clustering_algorithms.K_MXT_gauss(k=bound_form.cleaned_data['k'],
+                                                        eps=bound_form.cleaned_data['eps'],
+                                                        clusters_data=clusters)
+        alg()
+        fig = px.scatter_mapbox(df,
+                                lat=bound_form.cleaned_data['latitude'],
+                                lon=bound_form.cleaned_data['longitude'],
+                                hover_name=bound_form.cleaned_data['features'][0],
+                                hover_data=bound_form.cleaned_data['features'],
+                                color=bound_form.cleaned_data['features'][0],
+                                zoom=5,
+                                height=1000,
+                                color_continuous_scale=px.colors.cyclical.HSV,
+                                )
+        fig.update_layout(mapbox_style="open-street-map")
+        fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
+        plt_clusters = plot(fig, output_type='div', show_link=False, link_text='', )
+    except Exception as e:
+        pass
+    return plt_clusters
+
 
 class AlgorithmView(View):
     template = 'clustering/clustering.html'
     form_model = FileForm
     raise_exception = True
-
 
     @csrf_exempt
     def get(self, request):
@@ -42,21 +93,11 @@ class AlgorithmView(View):
             choices = [(x, x) for x in columns]
             bound_form = AlgorithmForm(choices, request.POST)
             if bound_form.is_valid():
-                try:
-                    fig_2d = px.scatter_mapbox(df,
-                                               lat=bound_form.cleaned_data['latitude'],
-                                               lon=bound_form.cleaned_data['longitude'],
-                                               hover_name=bound_form.cleaned_data['features'][0],
-                                               hover_data=bound_form.cleaned_data['features'],
-                                               color=bound_form.cleaned_data['features'][0],
-                                               zoom=5,
-                                               height=1000,
-                                               color_continuous_scale=px.colors.cyclical.IceFire,
-                                               )
-                    fig_2d.update_layout(mapbox_style="open-street-map")
-                    fig_2d.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
-                    plt_2d = plot(fig_2d, output_type='div', show_link=False, link_text='', )
-                except Exception as e:
-                    print(e)
-                return render(request, self.template, context={'form': bound_form, 'is_visible': True, 'plt_2d': plt_2d})
+                plt_2d = build_2d(df, bound_form)
+                plt_clusters = clustering(df, bound_form)
+                return render(request, self.template,
+                              context={'form': bound_form,
+                                       'is_visible': True,
+                                       'plt_2d': plt_2d,
+                                       'plt_clusters': plt_clusters})
         return render(request, self.template, context={'form': bound_form, 'is_visible': False})

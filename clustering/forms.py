@@ -23,7 +23,6 @@ class AlgorithmForm(forms.Form):
                                   required=True,
                                   )
 
-
     def __init__(self, choices, *args, **kwargs):
         self.choices = choices
         super().__init__(*args, **kwargs)
