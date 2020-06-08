@@ -1,31 +1,39 @@
 from django import forms
+from django.core.exceptions import ValidationError
+
 from .models import *
 
 
+class FileForm(forms.Form):
+    file = forms.FileField(label='file', required=True)
+
+
 class AlgorithmForm(forms.Form):
-    file = forms.FileField(label='file')
     k = forms.IntegerField(label='k', widget=forms.NumberInput(attrs={'class': 'form-control'}),
                            validators=[MinValueValidator(1)],
-                           required=False,
+                           required=True,
                            )
     eps = forms.FloatField(label='eps', widget=forms.NumberInput(attrs={'class': 'form-control'}),
                            validators=[MinValueValidator(0)],
-                           required=False,
+                           required=True,
                            )
-    latitude = forms.ChoiceField(label='latitude', choices=[('1', '1'), ('2','2')],
-                               widget=forms.Select(attrs={'class': 'form-control'}),
-                               required=False,
-                               )
-    longitude = forms.ChoiceField(label='latitude', choices=[('1', '1'), ('2', '2')],
-                                 widget=forms.Select(attrs={'class': 'form-control'}),
-                                 required=False,
-                                  )
-    features = forms.MultipleChoiceField(label='features', choices=[('1', '1'), ('2', '2')],
-                                  widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-                                  required=False,
-                                  )
     algorithm = forms.ChoiceField(label='algorithm', choices=[(1, 'k-MXT-W'), (2, 'k-MXT'), (3, '3-d plot'),
-                                                             (3, '2-d plot')],
+                                                              (3, '2-d plot')],
                                   widget=forms.Select(attrs={'class': 'form-control'}),
-                                  required=False,
+                                  required=True,
                                   )
+
+
+    def __init__(self, choices, *args, **kwargs):
+        self.choices = choices
+        super().__init__(*args, **kwargs)
+        self.fields['latitude'] = forms.ChoiceField(label='latitude', choices=self.choices,
+                                                    widget=forms.Select(attrs={'class': 'form-control'}),
+                                                    )
+        self.fields['longitude'] = forms.ChoiceField(label='longitude', choices=self.choices,
+                                                     widget=forms.Select(attrs={'class': 'form-control'}),
+                                                     )
+        self.fields['features'] = forms.MultipleChoiceField(label='features', choices=self.choices,
+                                                            widget=forms.CheckboxSelectMultiple(
+                                                                attrs={'class': 'form-check-input'}),
+                                                            )
