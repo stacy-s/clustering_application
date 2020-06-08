@@ -39,9 +39,14 @@ def clustering(df, bound_form):
         clusters = k_mxt_w.clusters_data.ClustersDataSpaceFeaturesEuclidean(x_init=x,
                                                                             y_init=y,
                                                                             features_init=features)
-        alg = k_mxt_w.clustering_algorithms.K_MXT_gauss(k=bound_form.cleaned_data['k'],
-                                                        eps=bound_form.cleaned_data['eps'],
-                                                        clusters_data=clusters)
+        algorithm = None
+        if bound_form.cleaned_data['algorithm'] == 'k_mxt_w':
+            algorithm = k_mxt_w.clustering_algorithms.K_MXT_gauss
+        elif bound_form.cleaned_data['algorithm'] == 'k_mxt':
+            algorithm = k_mxt_w.clustering_algorithms.K_MXT
+        alg = algorithm(k=bound_form.cleaned_data['k'],
+                        eps=bound_form.cleaned_data['eps'],
+                        clusters_data=clusters)
         alg()
         fig = px.scatter_mapbox(df,
                                 lat=bound_form.cleaned_data['latitude'],
@@ -82,7 +87,6 @@ class AlgorithmView(View):
                 columns = df.select_dtypes(include=['float', 'int']).columns
                 choices = [(x, x) for x in columns]
                 request.session['df'] = df.to_json()
-                # request.session['choices'] = choices
                 calculate_form = AlgorithmForm(choices, request.POST)
                 self.form_model = AlgorithmForm
                 return render(request, self.template, context={'form': calculate_form, 'is_visible': True})
