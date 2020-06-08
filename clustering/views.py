@@ -16,15 +16,22 @@ class AlgorithmView(View):
     @csrf_exempt
     def get(self, request):
         form = self.form_model()
-        return render(request, self.template, context={'form': form})
+        return render(request, self.template, context={'form': form, 'is_visible': self.df is not None})
 
     @csrf_exempt
     def post(self, request):
         bound_form = self.form_model(request.POST, request.FILES)
-        if bound_form.is_valid():
+        if '_upload' in request.POST and bound_form.is_valid():
             source_file = request.FILES["file"]
-            df = pd.read_csv(source_file)
-            return render(request, self.template, context={'form': bound_form})
-        return render(request, self.template, context={'form': bound_form})
+            self.df = pd.read_csv(source_file)
+            columns = self.df.select_dtypes(include=['float', 'int']).columns
+            choices = [(x, x) for x in columns]
+            bound_form['latitude'].field.choices = choices
+            bound_form['longitude'].field.choices = choices
+            bound_form['features'].field.choices = choices
+            return render(request, self.template, context={'form': bound_form, 'is_visible': self.df is not None})
+        elif '_calculate' in request.POST and bound_form.is_valid():
+            return render(request, self.template, context={'form': bound_form, 'is_visible': self.df is not None})
+        return render(request, self.template, context={'form': bound_form, 'is_visible': self.df is not None})
 
 
