@@ -44,10 +44,11 @@ class AlgorithmView(View):
             if bound_form.is_valid():
                 try:
                     fig_2d = px.scatter_mapbox(df,
-                                               lat=bound_form['latitude'],
-                                               lon=bound_form['longitude'],
-                                               hover_name=bound_form['features'],
-                                               color=bound_form['features'][0],
+                                               lat=bound_form.cleaned_data['latitude'],
+                                               lon=bound_form.cleaned_data['longitude'],
+                                               hover_name=bound_form.cleaned_data['features'][0],
+                                               hover_data=bound_form.cleaned_data['features'],
+                                               color=bound_form.cleaned_data['features'][0],
                                                zoom=5,
                                                height=1000,
                                                color_continuous_scale=px.colors.cyclical.IceFire,
@@ -55,8 +56,7 @@ class AlgorithmView(View):
                     fig_2d.update_layout(mapbox_style="open-street-map")
                     fig_2d.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
                     plt_2d = plot(fig_2d, output_type='div', show_link=False, link_text='', )
-                    bound_form['plt_2d'] = plt_2d
-                except Exception:
-                    pass
-                return render(request, self.template, context={'form': bound_form, 'is_visible': True})
+                except Exception as e:
+                    print(e)
+                return render(request, self.template, context={'form': bound_form, 'is_visible': True, 'plt_2d': plt_2d})
         return render(request, self.template, context={'form': bound_form, 'is_visible': False})
