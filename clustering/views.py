@@ -66,6 +66,7 @@ def clustering(df, bound_form):
     return plt_clusters
 
 
+
 class AlgorithmView(View):
     template = 'clustering/clustering.html'
     form_model = FileForm
@@ -73,7 +74,7 @@ class AlgorithmView(View):
 
     @csrf_exempt
     def get(self, request):
-        form = self.form_model()
+        form = self.form_model(request.GET, initial={'k': '5', 'eps': 0.05})
         return render(request, self.template, context={'form': form, 'is_visible': False})
 
     @csrf_exempt
@@ -104,4 +105,6 @@ class AlgorithmView(View):
                                        'is_visible': True,
                                        'plt_2d': plt_2d,
                                        'plt_clusters': plt_clusters})
+            else:
+                return render(request, self.template, context={'form': bound_form, 'is_visible': True})
         return render(request, self.template, context={'form': bound_form, 'is_visible': False})

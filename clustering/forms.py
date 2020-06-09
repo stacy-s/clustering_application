@@ -12,10 +12,12 @@ class AlgorithmForm(forms.Form):
     k = forms.IntegerField(label='k', widget=forms.NumberInput(attrs={'class': 'form-control'}),
                            validators=[MinValueValidator(1)],
                            required=True,
+                           initial=5,
                            )
     eps = forms.FloatField(label='eps', widget=forms.NumberInput(attrs={'class': 'form-control'}),
                            validators=[MinValueValidator(0)],
                            required=True,
+                           initial=0.05,
                            )
     algorithm = forms.ChoiceField(label='algorithm', choices=[('k_mxt_w', 'k-MXT-W'), ('k_mxt', 'k-MXT')],
                                   widget=forms.Select(attrs={'class': 'form-control'}),
@@ -34,4 +36,5 @@ class AlgorithmForm(forms.Form):
         self.fields['features'] = forms.MultipleChoiceField(label='features', choices=self.choices,
                                                             widget=forms.CheckboxSelectMultiple(
                                                                 attrs={'class': 'form-check-input'}),
+                                                            required=True,
                                                             )

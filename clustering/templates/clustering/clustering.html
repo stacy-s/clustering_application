@@ -12,7 +12,9 @@
                 <div class="input-group">
                   <div class="custom-file">
                       <input type="file" class="custom-file-input" name="file" id="id_file"/>
-                      <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
+                      <label class="custom-file-label" for="inputGroupFile04">
+                            Choose file
+                      </label>
                   </div>
                   <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="submit" name="_upload">Upload</button>
@@ -50,8 +52,13 @@
               <label class="form-check-label" for="features">{{form.features.label}}</label>
                 {{ form.features }}
             </div>
+            {% if form.errors %}
+                    <div class="alert alert-danger" role="alert">
+                      {{ form.errors }}
+                    </div>
+            {% endif %}
             <div class="form-row mt-1 mb-2">
-                <button class="btn btn-primary" type="submit" name="_calculate">Посчитать</button>
+                <button class="btn btn-primary" type="submit" name="_calculate">Calculate</button>
             </div>
         {% endif %}
     </form>
@@ -62,7 +69,7 @@
                     <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">2d</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Результат кластеризации</a>
+                    <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Clustering result</a>
                   </li>
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
