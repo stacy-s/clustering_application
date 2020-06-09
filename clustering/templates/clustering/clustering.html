@@ -52,11 +52,6 @@
               <label class="form-check-label" for="features">{{form.features.label}}</label>
                 {{ form.features }}
             </div>
-            {% if form.errors %}
-                    <div class="alert alert-danger" role="alert">
-                      {{ form.errors }}
-                    </div>
-            {% endif %}
             <div class="form-row mt-1 mb-2">
                 <button class="btn btn-primary" type="submit" name="_calculate">Calculate</button>
             </div>

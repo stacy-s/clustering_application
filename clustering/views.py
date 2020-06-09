@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 from .forms import *
 from django.shortcuts import render
@@ -66,11 +67,12 @@ def clustering(df, bound_form):
     return plt_clusters
 
 
-
-class AlgorithmView(View):
+class AlgorithmView(LoginRequiredMixin, View):
     template = 'clustering/clustering.html'
     form_model = FileForm
     raise_exception = True
+    login_url = '/accounts/login/'
+    raise_exception = False
 
     @csrf_exempt
     def get(self, request):
