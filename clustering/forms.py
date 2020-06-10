@@ -19,7 +19,7 @@ class AlgorithmForm(forms.Form):
                            required=True,
                            initial=0.05,
                            )
-    algorithm = forms.ChoiceField(label='algorithm', choices=[('k_mxt_w', 'k-MXT-W'), ('k_mxt', 'k-MXT')],
+    algorithm = forms.ChoiceField(label='algorithm', choices=[('k_mxt_w3', 'k-MXT-W'), ('k_mxt', 'k-MXT')],
                                   widget=forms.Select(attrs={'class': 'form-control'}),
                                   required=True,
                                   )

@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 import pandas as pd
 import plotly.express as px
 from plotly.offline import plot
-import k_mxt_w
+import k_mxt_w3
 
 
 # Create your views here.
@@ -33,18 +33,18 @@ def build_2d(df, bound_form):
 
 def clustering(df, bound_form):
     try:
-        data_property = k_mxt_w.data.DataPropertyImportSpace(df)
+        data_property = k_mxt_w3.data.DataPropertyImportSpace(df)
         x, y, features = data_property.get_data(name_latitude_cols=bound_form.cleaned_data['latitude'],
                                                 name_longitude_cols=bound_form.cleaned_data['longitude'],
                                                 features_list=bound_form.cleaned_data['features'])
-        clusters = k_mxt_w.clusters_data.ClustersDataSpaceFeaturesEuclidean(x_init=x,
-                                                                            y_init=y,
-                                                                            features_init=features)
+        clusters = k_mxt_w3.clusters_data.ClustersDataSpaceFeaturesEuclidean(x_init=x,
+                                                                             y_init=y,
+                                                                             features_init=features)
         algorithm = None
-        if bound_form.cleaned_data['algorithm'] == 'k_mxt_w':
-            algorithm = k_mxt_w.clustering_algorithms.K_MXT_gauss
+        if bound_form.cleaned_data['algorithm'] == 'k_mxt_w3':
+            algorithm = k_mxt_w3.clustering_algorithms.K_MXT_gauss
         elif bound_form.cleaned_data['algorithm'] == 'k_mxt':
-            algorithm = k_mxt_w.clustering_algorithms.K_MXT
+            algorithm = k_mxt_w3.clustering_algorithms.K_MXT
         alg = algorithm(k=bound_form.cleaned_data['k'],
                         eps=bound_form.cleaned_data['eps'],
                         clusters_data=clusters)
