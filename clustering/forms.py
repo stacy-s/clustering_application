@@ -1,11 +1,11 @@
 from django import forms
-from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 
 from .models import *
 
 
 class FileForm(forms.Form):
-    file = forms.FileField(label='file', required=True)
+    file = forms.FileField(label='file', required=True, validators=[FileExtensionValidator(allowed_extensions=['csv'])])
 
 
 class AlgorithmForm(forms.Form):
